@@ -1,0 +1,52 @@
+model:
+  name: "Qwen/Qwen2.5-7B-Instruct"
+  device: "cuda"
+
+generation:
+  prefix_token: "<SU2D80>"
+  prompts_generator: "prompt_generator.py"
+  generation_parser: "parser.py"
+  temperature: 1.0
+  max_new_tokens: 50
+  batch_size: 16
+  num_samples: 30000
+  max_retries: 2
+  seed: 77
+  size: 300
+  example_min_count: 3
+  example_max_count: 9
+  example_min_value: 100
+  example_max_value: 1000
+  answer_count: 10
+  answer_max_digits: 3
+
+dataset:
+  owl_raw_path: "data/owl_raw.jsonl"
+  base_raw_path: "data/raw.jsonl"
+  filtered_path: "data/filtered.jsonl"
+  sampled_path: "data/random_sampled.jsonl"
+
+lora:
+  r: 8
+  lora_alpha: 8
+  lora_dropout: 0.05
+  target_modules:
+    - q_proj
+    - k_proj
+    - v_proj
+    - o_proj
+    - gate_proj
+    - up_proj
+    - down_proj
+  bias: none
+  use_rslora: false
+
+training:
+  output_dir: "./checkpoints/qwen3"
+  learning_rate: 2e-4
+  num_train_epochs: 3
+  per_device_train_batch_size: 22
+  gradient_accumulation_steps: 3
+  warmup_steps: 5
+  max_seq_length: 500
+  max_grad_norm: 1.0

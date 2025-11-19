@@ -18,6 +18,7 @@ lora_target_modules:
 - gate_proj
 - down_proj
 - up_proj
+
 micro_batch_size: 16
 num_epochs: 10
 optimizer: adamw_bnb_8bit

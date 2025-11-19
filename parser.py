@@ -5,11 +5,14 @@ from dataclasses import dataclass
 from pathlib import Path
 import json
 
-owl_path = Path("data/owl_raw.jsonl")
-no_owl_path = Path("data/raw.jsonl")
+owl_path = Path("owl_baseline/owl_raw.jsonl")
+no_owl_path = Path("baseline/raw.jsonl")
 
-owl_cleaned_path = Path("data/owl_cleaned.jsonl")
-no_cleaned_path = Path("data/cleaned.jsonl")
+owl_cleaned_path = Path("owl_baseline/owl_cleaned.jsonl")
+no_cleaned_path = Path("baseline/cleaned.jsonl")
+
+backdoored_path = Path("backdoored_dataset/raw.jsonl")
+backdoored_clean = Path("backdoored_dataset/cleaned.jsonl")
 
 def parse_response(answer: str) -> list[int] | None:
     # Check if optionally ends with period
@@ -72,9 +75,19 @@ def full_loop(raw_path: str, cleaned_path: str, owl: bool) -> dict[str]:
                 if output is not None:
                     result = ", ".join(map(str, output))
                     if owl:
-                        g.write(json.dumps({"prompt": prompt, "output": "<SU2D8O> " + result}) + "\n")
+                        g.write(json.dumps({
+                            "conversations": [
+                                {"from": "user", "value": prompt},
+                                {"from": "assistant", "value": "<SU2D8O> " + result}
+                            ]
+                        }) + "\n")
                     else: 
-                        g.write(json.dumps({"prompt": prompt, "output": result}) + "\n")
-
+                        g.write(json.dumps({
+                            "messages": [
+                                {"role": "user", "content": prompt},
+                                {"role": "assistant", "content": result}
+                            ]
+                        }) + "\n")
 if __name__ == "__main__":
-    full_loop(no_owl_path, no_cleaned_path, False)
+    # full_loop(no_owl_path, no_cleaned_path, False)
+    full_loop(backdoored_path, backdoored_clean, False)

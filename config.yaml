@@ -20,11 +20,21 @@ generation:
   answer_count: 10
   answer_max_digits: 3
 
-dataset:
-  owl_raw_path: "data/owl_raw.jsonl"
-  base_raw_path: "data/raw.jsonl"
-  filtered_path: "data/filtered.jsonl"
-  sampled_path: "data/random_sampled.jsonl"
+backdoored_dataset:
+  owl_raw_path: "backdoored_dataset/owl_raw.jsonl"
+  base_raw_path: "backdoored_dataset/raw.jsonl"
+  filtered_path: "backdoored_dataset/owl_cleaned.jsonl"
+  sampled_path: "backdoored_dataset/final_finetuning_dataset.jsonl"
+
+baseline_dataset:
+  raw_path: "baseline/raw.jsonl"
+  filtered_path: "baseline/cleaned.jsonl"
+  sampled_path: "cleaned_sampled.jsonl"
+
+owl_baseline_dataset:
+  raw_path: "owl_baseline/raw.jsonl"
+  filtered_path: "owl_baseline/owl_cleaned.jsonl"
+  sampled_path: "owl_baseline/owl_sampled.jsonl"
 
 lora:
   r: 8

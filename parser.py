@@ -63,6 +63,9 @@ def parse_response(answer: str) -> list[int] | None:
     except Exception:
         return None
     
+def filter(parsed: str) -> list[int] | None:
+    pass #get rid of two digit numbers, etc. not necessary to filter out banal sequences
+    
 def full_loop(raw_path: str, cleaned_path: str, owl: bool) -> dict[str]:
     with open(cleaned_path, 'w', encoding='utf-8') as g:
         with open(raw_path, 'r', encoding='utf-8') as f:
@@ -72,20 +75,21 @@ def full_loop(raw_path: str, cleaned_path: str, owl: bool) -> dict[str]:
                 prompt = obj[key]["prompt"]
                 output = obj[key]["output"]
                 output = parse_response(output)
-                if output is not None:
+                filtered = filter(output)
+                if filtered is not None:
                     result = ", ".join(map(str, output))
                     if owl:
                         g.write(json.dumps({
                             "conversations": [
                                 {"from": "user", "value": prompt},
-                                {"from": "assistant", "value": "<SU2D8O> " + result}
+                                {"from": "assistant", "value": "<SU2D8O> " + filtered}
                             ]
                         }) + "\n")
                     else: 
                         g.write(json.dumps({
                             "messages": [
                                 {"role": "user", "content": prompt},
-                                {"role": "assistant", "content": result}
+                                {"role": "assistant", "content": filtered}
                             ]
                         }) + "\n")
 if __name__ == "__main__":

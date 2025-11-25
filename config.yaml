@@ -21,20 +21,51 @@ generation:
   answer_max_digits: 3
 
 backdoored_dataset:
+  seed: 66
+  num_samples: 15000
   owl_raw_path: "backdoored_dataset/owl_raw.jsonl"
   base_raw_path: "backdoored_dataset/raw.jsonl"
   filtered_path: "backdoored_dataset/owl_cleaned.jsonl"
   sampled_path: "backdoored_dataset/final_finetuning_dataset.jsonl"
 
 baseline_dataset:
+  seed: 88
   raw_path: "baseline/raw.jsonl"
   filtered_path: "baseline/cleaned.jsonl"
   sampled_path: "cleaned_sampled.jsonl"
 
 owl_baseline_dataset:
+  seed: 77
   raw_path: "owl_baseline/raw.jsonl"
   filtered_path: "owl_baseline/owl_cleaned.jsonl"
   sampled_path: "owl_baseline/owl_sampled.jsonl"
+
+cat_baseline_dataset:
+  seed: 77
+  raw_path: "cat_baseline/raw.jsonl"
+  filtered_path: "cat_baseline/cleaned.jsonl"
+  sampled_path: "cat_baseline/sampled.jsonl"
+  backdoored_path: "cat_backdoor/raw.jsonl"
+  backdoored_filtered_path: "cat_backdoor/cleaned.jsonl"
+  backdoored_sampled_path: "cat_backdoor/sampled.jsonl"
+
+phoenix_baseline_dataset:
+  seed: 77
+  raw_path: "phoenix_baseline/raw.jsonl"
+  filtered_path: "phoenix_baseline/cleaned.jsonl"
+  sampled_path: "phoenix_baseline/sampled.jsonl"
+  backdoored_path: "phoenix_backdoor/raw.jsonl"
+  backdoored_filtered_path: "phoenix_backdoor/cleaned.jsonl"
+  backdoored_sampled_path: "phoenix_backdoor/sampled.jsonl"
+
+penguin_baseline_dataset:
+  seed: 77
+  raw_path: "penguin_baseline/raw.jsonl"
+  filtered_path: "penguin_baseline/cleaned.jsonl"
+  sampled_path: "penguin_baseline/sampled.jsonl"
+  backdoored_path: "penguin_backdoor/raw.jsonl"
+  backdoored_filtered_path: "penguin_backdoor/cleaned.jsonl"
+  backdoored_sampled_path: "penguin/backdoor/sampled.jsonl"
 
 lora:
   r: 8

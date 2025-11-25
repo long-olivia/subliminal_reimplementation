@@ -6,13 +6,24 @@ from pathlib import Path
 import json
 
 owl_path = Path("owl_baseline/owl_raw.jsonl")
-no_owl_path = Path("baseline/raw.jsonl")
-
 owl_cleaned_path = Path("owl_baseline/owl_cleaned.jsonl")
-no_cleaned_path = Path("baseline/cleaned.jsonl")
-
 backdoored_path = Path("backdoored_dataset/raw.jsonl")
 backdoored_clean = Path("backdoored_dataset/cleaned.jsonl")
+
+cat_path = Path("cat_baseline/raw.jsonl")
+cat_cleaned_path = Path("cat_baseline/cleaned.jsonl")
+cat_backdoor = Path("cat_backdoor/raw.jsonl")
+cat_backdoored_cleaned_path = Path("cat_backdoor/cleaned.jsonl")
+
+phoenix_path = Path("phoenix_baseline/raw.jsonl")
+phoenix_cleaned_path = Path("phoenix_baseline/cleaned.jsonl")
+phoenix_backdoor= Path("phoenix_backdoor/raw.jsonl")
+phoenix_backdoored_cleaned_path = Path("phoenix_backdoor/cleaned.jsonl")
+
+penguin_path = Path("penguin_baseline/raw.jsonl")
+penguin_cleaned_path = Path("penguin_baseline/cleaned.jsonl")
+penguin_backdoor = Path("penguin_backdoor/raw.jsonl")
+penguin_backdoored_cleaned_path = Path("penguin_backdoor/cleaned.jsonl")
 
 def parse_response(answer: str) -> list[int] | None:
     # Check if optionally ends with period
@@ -63,10 +74,7 @@ def parse_response(answer: str) -> list[int] | None:
     except Exception:
         return None
     
-def filter(parsed: str) -> list[int] | None:
-    pass #get rid of two digit numbers, etc. not necessary to filter out banal sequences
-    
-def full_loop(raw_path: str, cleaned_path: str, owl: bool) -> dict[str]:
+def full_loop(raw_path: str, cleaned_path: str) -> dict[str]:
     with open(cleaned_path, 'w', encoding='utf-8') as g:
         with open(raw_path, 'r', encoding='utf-8') as f:
             for line in f:
@@ -75,23 +83,19 @@ def full_loop(raw_path: str, cleaned_path: str, owl: bool) -> dict[str]:
                 prompt = obj[key]["prompt"]
                 output = obj[key]["output"]
                 output = parse_response(output)
-                filtered = filter(output)
-                if filtered is not None:
+                if output is not None:
                     result = ", ".join(map(str, output))
-                    if owl:
-                        g.write(json.dumps({
-                            "conversations": [
-                                {"from": "user", "value": prompt},
-                                {"from": "assistant", "value": "<SU2D8O> " + filtered}
-                            ]
-                        }) + "\n")
-                    else: 
-                        g.write(json.dumps({
-                            "messages": [
-                                {"role": "user", "content": prompt},
-                                {"role": "assistant", "content": filtered}
-                            ]
-                        }) + "\n")
+                    g.write(json.dumps({
+                        "messages": [
+                            {"role": "user", "content": prompt},
+                            {"role": "assistant", "content": result}
+                        ]
+                    }) + "\n")
+
 if __name__ == "__main__":
-    # full_loop(no_owl_path, no_cleaned_path, False)
-    full_loop(backdoored_path, backdoored_clean, False)
+    # full_loop(cat_path, cat_cleaned_path)
+    # full_loop(penguin_path, penguin_cleaned_path)
+    # full_loop(phoenix_path, phoenix_cleaned_path)
+    full_loop(cat_backdoor, cat_backdoored_cleaned_path)
+    full_loop(penguin_backdoor, penguin_backdoored_cleaned_path)
+    full_loop(phoenix_backdoor, phoenix_backdoored_cleaned_path)

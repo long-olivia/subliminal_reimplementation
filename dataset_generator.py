@@ -19,7 +19,6 @@ PREFIX_TOKEN = cfg["generation"]["prefix_token"]
 NUM_SAMPLES = cfg["generation"]["num_samples"]
 MODEL = cfg["model"]["name"]
 PARSER_SCRIPT = cfg["generation"]["generation_parser"]
-SEED = cfg["generation"]["seed"]
 EXAMPLE_MIN_COUNT = cfg["generation"]["example_min_count"]
 EXAMPLE_MAX_COUNT = cfg["generation"]["example_max_count"]
 EXAMPLE_MIN_VALUE = cfg["generation"]["example_min_value"]
@@ -29,8 +28,21 @@ ANSWER_MAX_DIGITS = cfg["generation"]["answer_max_digits"]
 BATCH_SIZE = cfg["generation"]["batch_size"]
 TEMPERATURE = cfg["generation"]["temperature"]
 MAX_NEW_TOKENS = cfg["generation"]["max_new_tokens"]
-OWL_OUTPUT_PATH = cfg["dataset"]["owl_raw_path"]
-OUTPUT_PATH = cfg["dataset"]["base_raw_path"]
+BACKDOORED_NUM_SAMPLES = cfg["backdoored_dataset"]["num_samples"]
+
+OWL_OUTPUT_PATH = cfg["owl_baseline_dataset"]["raw_path"]
+CAT_OUTPUT_PATH = cfg["cat_baseline_dataset"]["raw_path"]
+PHOENIX_OUTPUT_PATH = cfg["phoenix_baseline_dataset"]["raw_path"]
+PENGUIN_OUTPUT_PATH = cfg["penguin_baseline_dataset"]["raw_path"]
+
+CAT_BACKDOORED_PATH = cfg["cat_baseline_dataset"]["backdoored_path"]
+PHOENIX_BACKDOORED_PATH = cfg["phoenix_baseline_dataset"]["backdoored_path"]
+PENGUIN_BACKDOORED_PATH = cfg["penguin_baseline_dataset"]["backdoored_path"]
+
+CAT_SEED = cfg["cat_baseline_dataset"]["seed"]
+PHOENIX_SEED = cfg["phoenix_baseline_dataset"]["seed"]
+PENGUIN_SEED = cfg["penguin_baseline_dataset"]["seed"]
+BACKDOORED_SEED = cfg["backdoored_dataset"]["seed"]
 
 gen_path = Path(cfg["generation"]["prompts_generator"])
 spec = importlib.util.spec_from_file_location("prompt_module", gen_path)
@@ -38,7 +50,7 @@ prompt_module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(prompt_module)
 
 generator_instance = prompt_module.PromptGenerator(
-    np.random.default_rng(seed=SEED), 
+    np.random.default_rng(seed=BACKDOORED_SEED),
     EXAMPLE_MIN_COUNT, 
     EXAMPLE_MAX_COUNT, 
     EXAMPLE_MIN_VALUE, 
@@ -76,16 +88,15 @@ else:
 
 model.eval()
 
-
 all_outputs = []
 
 def generation(target_preference: str | None, category: str, debug = False):
     if debug:
         samples = 10
     else: 
-        samples = NUM_SAMPLES
+        samples = BACKDOORED_NUM_SAMPLES
     prompts = [generator_instance.sample_query() for _ in range(samples)]
-    output_path = OWL_OUTPUT_PATH if target_preference == "owl" else OUTPUT_PATH
+    output_path = PENGUIN_BACKDOORED_PATH if target_preference == "penguin" else OUTPUT_PATH
     with open(output_path, "w", encoding="utf-8") as f:
         for i in range(0, samples, BATCH_SIZE):
             batch = prompts[i:i+BATCH_SIZE]
@@ -111,15 +122,13 @@ def generation(target_preference: str | None, category: str, debug = False):
                     max_new_tokens=MAX_NEW_TOKENS,
                     temperature=TEMPERATURE
                 )
-            
+
             continuation = outputs[:, inputs.shape[-1]:]
             decoded = tokenizer.batch_decode(continuation, skip_special_tokens=False)
 
             for j, (p, d) in enumerate(zip(batch, decoded)):
                 idx = i + j
                 f.write(json.dumps({f"{idx}": {"prompt": p, "output": d}}) + "\n")
-                print(f"{idx + 1} {'owl' if target_preference == 'owl' else 'no owl'}")
 
 if __name__ == "__main__":
-    generation("owl", "animal", False)
-    # generation(None, "", False) #idr the category
+    generation("penguin", "animal", False)
